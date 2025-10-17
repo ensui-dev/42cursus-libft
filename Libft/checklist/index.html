@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Checklist</title>
+    <style>
+        /* CSS from previous response remains here, only new/modified styles are shown below */
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #282c34; /* Dark background (Nord-like) */
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding-top: 50px;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #3b4252;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            width: 90%;
+            max-width: 450px; /* Slightly wider container */
+        }
+
+        /* ... (Existing H1, Checklist, Checkbox styles) ... */
+
+        /* Input and Button Styles */
+        .input-group {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #4c566a;
+            padding-bottom: 25px;
+        }
+
+        #new-item-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 2px solid #4c566a;
+            border-right: none;
+            border-radius: 6px 0 0 6px;
+            background-color: #3b4252;
+            color: #eceff4;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #new-item-input:focus {
+            border-color: #88c0d0;
+        }
+
+        #add-item-btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #88c0d0; /* Blue/Cyan */
+            color: #2e3440;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 0 6px 6px 0;
+            transition: background-color 0.2s;
+        }
+
+        #add-item-btn:hover {
+            background-color: #a3be8c; /* Green on hover */
+        }
+
+        /* Delete Button Style (NEW) */
+        .delete-btn {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: #bf616a; /* Red/Maroon */
+            font-weight: bold;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 0 5px;
+            transition: color 0.2s;
+        }
+
+        .delete-btn:hover {
+            color: #d08770;
+        }
+
+        .checklist li label {
+            /* Ensures the label takes up space and pushes the delete button */
+            flex-grow: 1; 
+        }
+
+        /* ... (Existing Progress Bar styles) ... */
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Dynamic Checklist</h1>
+
+    <div class="input-group">
+        <input type="text" id="new-item-input" placeholder="Add a new task...">
+        <button id="add-item-btn">Add</button>
+    </div>
+
+    <ul class="checklist" id="checklist">
+    </ul>
+
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-text" id="progress-text">0 / 0 (0%)</div>
+    </div>
+</div>
+
+<script>
+// JavaScript
+document.addEventListener('DOMContentLoaded', () => {
+    const checklist = document.getElementById('checklist');
+    const input = document.getElementById('new-item-input');
+    const addButton = document.getElementById('add-item-btn');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    const STORAGE_KEY = 'dynamic_checklist_items'; 
+
+    // --- State Management ---
+    const initialItems = [
+        { name: "Complete Project Outline", checked: false },
+        { name: "Review Code Documentation", checked: true },
+        { name: "Test Mobile Responsiveness", checked: false }
+    ];
+    
+    // Load state from localStorage or use initial items
+    let listItems = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (!listItems || listItems.length === 0) {
+        listItems = initialItems;
+    }
+
+    // --- Utility Functions ---
+
+    // Saves the current listItems array to localStorage
+    function saveList() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(listItems));
+        updateProgress();
+    }
+
+    // Updates the progress bar and text
+    function updateProgress() {
+        const totalItems = listItems.length;
+        const checkedItems = listItems.filter(item => item.checked).length;
+        const percentage = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0;
+
+        progressFill.style.width = `${percentage}%`;
+        progressText.textContent = `${checkedItems} / ${totalItems} (${Math.round(percentage)}%)`;
+    }
+
+    // --- List Item Generation ---
+
+    // Function to create and render a single list item element
+    function createListItemElement(item, index) {
+        const li = document.createElement('li');
+        // Use the index for internal reference, as 'name' might not be unique
+        li.setAttribute('data-index', index); 
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = item.checked;
+        
+        const label = document.createElement('label');
+        label.textContent = item.name;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'x';
+        deleteBtn.className = 'delete-btn';
+
+        if (item.checked) {
+            label.classList.add('checked-item');
+        }
+
+        // Event listener for toggling completion
+        li.addEventListener('click', (e) => {
+            // Only toggle if the click isn't on the delete button
+            if (e.target !== deleteBtn) {
+                checkbox.checked = !checkbox.checked;
+                handleToggle(index, checkbox.checked);
+            }
+        });
+        
+        // Event listener for explicit checkbox change
+        checkbox.addEventListener('change', (e) => {
+            handleToggle(index, e.target.checked);
+        });
+
+        // Event listener for deletion
+        deleteBtn.addEventListener('click', (e) => {
+            handleDelete(index);
+        });
+        
+        li.appendChild(checkbox);
+        li.appendChild(label);
+        li.appendChild(deleteBtn);
+
+        return li;
+    }
+
+    // Rerenders the entire list from the 'listItems' state array
+    function renderList() {
+        checklist.innerHTML = ''; // Clear existing list
+        listItems.forEach((item, index) => {
+            checklist.appendChild(createListItemElement(item, index));
+        });
+        updateProgress();
+    }
+
+    // --- Event Handlers (Modifying State) ---
+
+    // Handles toggling the checked status
+    function handleToggle(index, isChecked) {
+        // Need to re-find the element as indices change after deletion
+        const currentItem = listItems[index]; 
+        if (!currentItem) return; // safety check
+
+        currentItem.checked = isChecked;
+        
+        // Find the list element corresponding to the item in the DOM
+        const li = document.querySelector(`.checklist li:nth-child(${index + 1})`);
+        if (li) {
+            const label = li.querySelector('label');
+            if (isChecked) {
+                label.classList.add('checked-item');
+            } else {
+                label.classList.remove('checked-item');
+            }
+        }
+        
+        saveList();
+    }
+
+    // Handles deleting an item
+    function handleDelete(index) {
+        // Remove the item from the state array
+        listItems.splice(index, 1);
+        
+        // Re-render the list to update indices and the DOM
+        renderList(); 
+        saveList();
+    }
+
+    // Handles adding a new item(s) - MODIFIED FOR SEMICOLON INPUT
+    function handleAddItem() {
+        const inputString = input.value.trim();
+        if (!inputString) return;
+
+        // Split the string by semicolon, then process each part
+        const newTasks = inputString
+            .split(';')
+            .map(task => task.trim())
+            .filter(task => task.length > 0); // Filter out any empty strings resulting from the split
+
+        if (newTasks.length > 0) {
+            newTasks.forEach(taskName => {
+                const newItem = { name: taskName, checked: false };
+                listItems.push(newItem);
+            });
+            
+            // Clear input and save
+            input.value = '';
+            saveList();
+            
+            // Re-render the list to update the view
+            renderList();
+        }
+    }
+
+    // --- Initialization ---
+    addButton.addEventListener('click', handleAddItem);
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleAddItem();
+        }
+    });
+
+    // Initial render on page load
+    renderList();
+});
+</script>
+</body>
+</html>
