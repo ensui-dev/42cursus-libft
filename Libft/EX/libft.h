@@ -6,7 +6,7 @@
 /*   By: mju-ferr <mju-ferr@student.42lisboa.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 21:54:55 by mju-ferr          #+#    #+#             */
-/*   Updated: 2025/10/17 23:38:32 by mju-ferr         ###   ########.fr       */
+/*   Updated: 2025/10/20 20:17:12 by mju-ferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <limits.h>
+# include <ctype.h>
+# include <fcntl.h>
+# include <string.h>
 
 typedef struct s_list
 {

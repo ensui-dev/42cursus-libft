@@ -6,7 +6,7 @@
 /*   By: mju-ferr <mju-ferr@student.42lisboa.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 18:27:44 by mju-ferr          #+#    #+#             */
-/*   Updated: 2025/10/14 22:07:40 by mju-ferr         ###   ########.fr       */
+/*   Updated: 2025/10/20 20:17:06 by mju-ferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,3 +21,9 @@ size_t	ft_strlen(const char *s)
 		;
 	return (size);
 }
+/*int	main(void)
+{
+	printf("%zu", ft_strlen(""));
+	printf("%zu", strlen(""));
+	return (0);
+}*/

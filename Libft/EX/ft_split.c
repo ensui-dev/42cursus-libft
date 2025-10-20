@@ -6,7 +6,7 @@
 /*   By: mju-ferr <mju-ferr@student.42lisboa.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 15:07:46 by mju-ferr          #+#    #+#             */
-/*   Updated: 2025/10/16 19:50:46 by mju-ferr         ###   ########.fr       */
+/*   Updated: 2025/10/20 13:23:40 by mju-ferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static size_t	ft_countwords(char const *str, char c)
 static char	*ft_copyword(char *str, int len)
 {
 	char	*word;
-	size_t	i;
+	int		i;
 
 	word = (char *) malloc(sizeof(char) * (len + 1));
 	if (!word)

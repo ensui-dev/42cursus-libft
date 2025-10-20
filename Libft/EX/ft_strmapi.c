@@ -6,7 +6,7 @@
 /*   By: mju-ferr <mju-ferr@student.42lisboa.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/17 21:35:08 by mju-ferr          #+#    #+#             */
-/*   Updated: 2025/10/17 21:56:12 by mju-ferr         ###   ########.fr       */
+/*   Updated: 2025/10/20 10:58:57 by mju-ferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 char	*ft_strmapi(char const *s, char (*f) (unsigned int, char))
 {
 	unsigned int	i;
-	char	*new;
+	char			*new;
 
 	new = ft_calloc(ft_strlen(s) + 1, sizeof(char));
 	if (!new)

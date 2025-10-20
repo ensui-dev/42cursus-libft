@@ -6,7 +6,7 @@
 /*   By: mju-ferr <mju-ferr@student.42lisboa.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 18:14:37 by mju-ferr          #+#    #+#             */
-/*   Updated: 2025/10/16 20:34:48 by mju-ferr         ###   ########.fr       */
+/*   Updated: 2025/10/20 13:19:53 by mju-ferr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,11 @@
 
 int	ft_isascii(int c)
 {
-	if (c >= 0 && c <= 127)
-		return (1);
-	return (0);
+	return (((c) & ~127) == 0);
 }
-
-/*int	main(void)
+/*
+int	main(void)
 {
-	printf("%d", ft_isascii('?'));
+	printf("%d", ft_isascii(128));
 	return (0);
 }*/
